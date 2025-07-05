@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Listado de Usuarios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fuentes y estilos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="/css/listados3.css" />
+    <link rel="stylesheet" href="/css/estilos.css" />
+</head>
+
+<body>
+<div th:replace="~{menu_nav :: menu-nav}"></div>
+
+<div class="container mt-5">
+    <h2 class="titulo text-center mb-4">👥 Listado de Usuarios</h2>
+
+    <!-- Botón nuevo usuario -->
+    <div class="text-center mb-4">
+        <a th:href="@{/usuarios/nuevo}" class="btn btn-nuevo">
+            <i class="fa-solid fa-plus me-2"></i> Nuevo Usuario
+        </a>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <form th:action="@{/usuarios/listado}" method="get" class="row g-2 mb-4 justify-content-center">
+        <!-- Combo Tipo -->
+        <div class="col-md-3">
+            <select name="tipo" class="form-select">
+                <option th:value="0" th:selected="${tipoSeleccionado == 0}">Todos los tipos</option>
+                <option th:each="t : ${tipos}" th:value="${t.idtipo}" th:text="${t.descripcion}"
+                        th:selected="${tipoSeleccionado == t.idtipo}"></option>
+            </select>
+        </div>
+
+        <!-- Búsqueda por nombre o apellido -->
+        <div class="col-md-4">
+            <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre o apellido"
+                   th:value="${busqueda}" />
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fa-solid fa-filter me-1"></i> Filtrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered align-middle tabla-usuarios text-center">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody class="table-light">
+            <tr th:each="u : ${lista}">
+                <td th:text="${u.codigo}"></td>
+                <td th:text="${u.correo}"></td>
+                <td th:text="${u.nombre}"></td>
+                <td th:text="${u.apellido}"></td>
+                <td th:text="${u.tipo.descripcion}"></td>
+                <td th:text="${u.estado.descripcion}"></td>
+                <td>
+                    <!-- Botón de Editar -->
+                    <a th:href="@{'/usuarios/editar/' + ${u.codigo}}" class="btn btn-outline-primary btn-sm" title="Editar">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+
+                    <!-- Botón de Eliminar -->
+                    <a th:href="@{'/usuarios/eliminar/' + ${u.codigo}}" class="btn btn-outline-danger btn-sm"
+                       onclick="return confirm('¿Eliminar este usuario?')">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+
+                   
+                    
+                        
+                </td>
+            </tr>
+            <tr th:if="${lista.size() == 0}">
+                <td colspan="7" class="text-center text-muted">No se encontraron usuarios.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Alerta -->
+    <div th:if="${alert}" class="mt-4">
+        <div th:utext="${alert}"></div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer id="contenedor-footer" class="bg-dark text-white mt-5 py-4">
+    <div class="container d-flex justify-content-between flex-wrap">
+        <div>
+            <h5>NOSOTROS</h5>
+            <p>Somos una tienda especializada en ropa de cuero para hombres, diseñada con calidad y estilo.</p>
+            <span class="letra-logo">Macho<span class="text-danger">Men</span></span>
+        </div>
+        <div>
+            <h5>ENLACES</h5>
+            <p><a th:href="@{/contacto}" class="text-white">Contáctanos</a></p>
+        </div>
+        <div>
+            <h5>REDES</h5>
+            <br>
+            <i class="bi bi-instagram me-2"></i>
+            <i class="bi bi-tiktok me-2"></i>
+            <i class="bi bi-facebook"></i>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

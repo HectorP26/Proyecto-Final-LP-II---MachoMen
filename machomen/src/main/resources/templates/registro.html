@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro - MachoMen</title>
+
+  <!-- Estilos y fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/estilos.css" />
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="d-flex justify-content-center align-items-center login-page" style="min-height: 100vh;">
+  <div class="login-container card2 shadow-lg">
+    <div class="card2-body">
+      <h2 class="login-title">Macho<span>Men</span></h2>
+      <p class="login-subtitle">Crea tu cuenta</p>
+
+      <form th:action="@{/registro}" method="post" th:object="${usuario}" class="needs-validation" novalidate>
+
+        <!-- ERRORES GLOBALES -->
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger mt-2">
+          <ul>
+            <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+          </ul>
+        </div>
+
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control bg-dark-login" th:field="*{nombre}" placeholder="Tu nombre" required />
+          <div class="invalid-feedback">Nombre obligatorio</div>
+          <div class="text-danger small mt-1" th:errors="*{nombre}" th:if="${#fields.hasErrors('nombre')}"></div>
+        </div>
+
+        <!-- Apellido -->
+        <div class="mb-3">
+          <label class="form-label">Apellido</label>
+          <input type="text" class="form-control bg-dark-login" th:field="*{apellido}" placeholder="Tu apellido" required />
+          <div class="invalid-feedback">Apellido obligatorio</div>
+          <div class="text-danger small mt-1" th:errors="*{apellido}" th:if="${#fields.hasErrors('apellido')}"></div>
+        </div>
+
+        <!-- Correo -->
+        <div class="mb-3">
+          <label class="form-label">Correo</label>
+          <input type="email" class="form-control bg-dark-login" th:field="*{correo}" placeholder="Correo electrónico" required />
+          <div class="invalid-feedback">Correo válido obligatorio</div>
+          <div class="text-danger small mt-1" th:errors="*{correo}" th:if="${#fields.hasErrors('correo')}"></div>
+        </div>
+
+        <!-- Clave -->
+        <div class="mb-3">
+          <label class="form-label">Clave</label>
+          <input type="password" class="form-control bg-dark-login" th:field="*{clave}" placeholder="Contraseña" required />
+          <div class="invalid-feedback">Clave obligatoria</div>
+          <div class="text-danger small mt-1" th:errors="*{clave}" th:if="${#fields.hasErrors('clave')}"></div>
+        </div>
+
+        <!-- Fecha de nacimiento -->
+        <div class="mb-3">
+          <label class="form-label">Fecha de nacimiento</label>
+          <input type="date" class="form-control bg-dark-login" th:field="*{fechaNacimiento}" required />
+          <div class="invalid-feedback">Fecha de nacimiento obligatoria</div>
+          <div class="text-danger small mt-1" th:errors="*{fechaNacimiento}" th:if="${#fields.hasErrors('fechaNacimiento')}"></div>
+        </div>
+
+        <!-- Botón -->
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-outline-light btn-login">
+            <i class="fas fa-user-plus me-2"></i> Registrarse
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card2-footer">
+      ¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión</a>
+    </div>
+  </div>
+
+  <!-- Mensaje de alerta SweetAlert -->
+  <th:block th:utext="${alert}"></th:block>
+
+  <!-- Validación SweetAlert + Bootstrap -->
+  <script>
+    (() => {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            Swal.fire({
+              title: 'Campos incompletos',
+              text: 'Por favor completa todos los campos obligatorios correctamente.',
+              icon: 'warning',
+              confirmButtonText: 'Entendido'
+            });
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

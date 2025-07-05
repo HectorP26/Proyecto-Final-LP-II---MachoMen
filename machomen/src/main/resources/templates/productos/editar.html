@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Editar Producto - Machomen</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fuentes y estilos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/nuevocrud.css" />
+    <link rel="stylesheet" href="/css/estilos.css" />
+    <link rel="stylesheet" href="/css/contenedorbueno3.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <!-- Menú de navegación -->
+    <div th:replace="~{menu_nav :: menu-nav}"></div>
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="text-center fw-bold mb-4">✏️ Editar Producto</h2>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-8">
+                        <form th:action="@{/productos/guardar}" method="post" th:object="${producto}" class="formulario-producto">
+
+                            <!-- Código (solo lectura) -->
+                            <div class="mb-3">
+                                <label for="idProd" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="idProd" th:field="*{idProd}" readonly />
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label for="desProd" class="form-label">Descripción</label>
+                                <input type="text" class="form-control" id="desProd" th:field="*{desProd}" 
+                                       th:classappend="${#fields.hasErrors('desProd')} ? 'is-invalid'" required />
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('desProd')}" th:errors="*{desProd}"></div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Stock -->
+                                <div class="mb-3 col-md-6">
+                                    <label for="stkProd" class="form-label">Stock</label>
+                                    <input type="number" class="form-control" id="stkProd" th:field="*{stkProd}" 
+                                           th:classappend="${#fields.hasErrors('stkProd')} ? 'is-invalid'" min="1" required />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('stkProd')}" th:errors="*{stkProd}"></div>
+                                </div>
+
+                                <!-- Precio -->
+                                <div class="mb-3 col-md-6">
+                                    <label for="preProd" class="form-label">Precio</label>
+                                    <input type="number" class="form-control" id="preProd" th:field="*{preProd}" step="0.01" min="0.01" 
+                                           th:classappend="${#fields.hasErrors('preProd')} ? 'is-invalid'" required />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('preProd')}" th:errors="*{preProd}"></div>
+                                </div>
+                            </div>
+
+                            <!-- Categoría -->
+                            <div class="mb-3">
+                                <label for="categoria" class="form-label">Categoría</label>
+                                <select id="categoria" class="form-select" name="categoriaId" required>
+                                    <option value="">-- Seleccione una categoría --</option>
+                                    <option th:each="item : ${categorias}"
+                                            th:value="${item.idCategoria}"
+                                            th:text="${item.descripcion}"
+                                            th:selected="${item.idCategoria == producto.categoria.idCategoria}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    Limpiar <i class="fa-solid fa-eraser"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Guardar <i class="fa-solid fa-floppy-disk"></i>
+                                </button>
+                                <a th:href="@{/productos/listado}" class="btn btn-secondary">
+                                    Regresar <i class="fa-solid fa-circle-left"></i>
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Alerta SweetAlert -->
+                        <div th:if="${alert}" class="mt-3">
+                            <div th:utext="${alert}"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contenedor-footer" class="bg-dark text-white mt-5 py-4">
+        <div class="container d-flex justify-content-between flex-wrap">
+            <div>
+                <h5>NOSOTROS</h5>
+                <p>Somos una tienda especializada en ropa de cuero para hombres, diseñada con calidad y estilo.</p>
+                <span class="letra-logo">Macho<span class="text-danger">Men</span></span>
+            </div>
+            <div>
+                <h5>ENLACES</h5>
+                <p><a th:href="@{/contacto}" class="text-white">Contáctanos</a></p>
+            </div>
+            <div>
+                <h5>REDES</h5>
+                <br />
+                <i class="bi bi-instagram me-2"></i>
+                <i class="bi bi-tiktok me-2"></i>
+                <i class="bi bi-facebook"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

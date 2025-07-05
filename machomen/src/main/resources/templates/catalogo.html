@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo | MachoMen</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/estilos.css" />
+
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+<body>
+
+<div th:replace="~{menu_nav :: menu-nav}"></div>
+
+<main>
+  <h1 class="titulo-catalogo">
+    <span class="parte-blanco">Catálogo de</span>
+    <span class="parte-blanco">Macho<span class="parte-celeste">Men</span></span>
+  </h1>
+
+  <div class="container pt-5" style="margin-top: -60px;" id="catalogo">
+    <div class="row">
+
+      <div class="col-md-3 mb-4">
+        <h4 class="mb-3">Filtrar por Categoría</h4>
+        <form th:action="@{/catalogo}" method="post">
+          <div class="mb-3">
+            <select name="categoria" class="form-select">
+              <option th:value="0" th:selected="${categoria == 0}">Todos</option>
+              <option th:value="1" th:selected="${categoria == 1}">Zapatos</option>
+              <option th:value="2" th:selected="${categoria == 2}">Billeteras</option>
+              <option th:value="3" th:selected="${categoria == 3}">Casacas</option>
+            </select>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+          </div>
+        </form>
+
+        <div th:if="${error != null}" class="alert alert-danger mt-3" th:text="${error}"></div>
+      </div>
+
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-4 mb-4" th:each="p : ${lstProductos}">
+            <div class="card h-100">
+
+              <img th:src="@{'/img/productos/' + ${p.imagen}}"
+                   class="card-img-top" height="180"
+                   onerror="this.src='/img/productos/no-imagen.png'" alt="Producto">
+
+              <div class="card-body">
+                <h5 class="card-title" th:text="${p.desProd}">Nombre</h5>
+                <p class="card-text text-danger fw-bold">
+                  S/ <span th:text="${#numbers.formatDecimal(p.preProd, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                </p>
+                <p class="card-text small">
+                  Categoría: <span th:text="${p.categoria.descripcion}">Categoría</span>
+                </p>
+                <p class="card-text small">
+                  Stock: <span th:text="${p.stkProd}">Categoría</span>
+                </p>
+              </div>
+
+              <div class="card-footer text-center bg-white border-0">
+			    <a class="btn btn-outline-primary btn-sm" 
+			       th:href="@{/mostrar(codigo=${p.idProd})}" 
+			       style="color: white;">Mostrar</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer id="contenedor-footer" class="bg-dark text-white mt-5 py-4">
+  <div class="container d-flex justify-content-between flex-wrap">
+    <div>
+      <h5>NOSOTROS</h5>
+      <p>Somos una tienda especializada en ropa de cuero para hombres, diseñada con calidad y estilo.</p>
+      <span class="letra-logo">Macho<span class="text-danger">Men</span></span>
+    </div>
+    <div>
+      <h5>ENLACES</h5>
+      <p><a th:href="@{/contacto}" class="text-white">Contáctanos</a></p>
+    </div>
+    <div>
+      <h5>REDES</h5>
+      <br>
+      <i class="bi bi-instagram me-2"></i>
+      <i class="bi bi-tiktok me-2"></i>
+      <i class="bi bi-facebook"></i>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/javas2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/cbd1db26b3.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

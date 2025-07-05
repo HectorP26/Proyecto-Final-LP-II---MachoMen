@@ -1,0 +1,132 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
+	th:fragment="menu-nav">
+	<div class="container-fluid">
+		<a class="navbar-brand d-flex align-items-center" href="/menuprincipal">
+			<i class="fas fa-mars me-2 text-danger"></i>
+			<span class="macho fw-bold">Macho</span><span class="men text-danger fw-bold">Men</span>
+		</a>
+
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+			data-bs-target="#navbarNav">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav ms-auto align-items-center" style="z-index: 1050;">
+
+				<li class="nav-item">
+					<a class="nav-link active" href="/menuprincipal">
+						<i class="fas fa-home me-1"></i> Inicio
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="/catalogo">
+						<i class="fas fa-th-large me-1"></i> Catálogo
+					</a>
+				</li>
+
+				<!-- Mantenimiento solo para ADMIN -->
+				<li class="nav-item dropdown" th:if="${rol == 'ADMIN'}">
+					<a class="nav-link dropdown-toggle" href="#" id="mantenimientoDropdown"
+					   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-tools me-1"></i> Mantenimiento
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mantenimientoDropdown">
+						<li><a class="dropdown-item" th:href="@{/productos/listado}">
+							<i class="fas fa-box me-2"></i>Productos</a></li>
+						<li><a class="dropdown-item" th:href="@{/categorias/listado}">
+							<i class="fas fa-tags me-2"></i>Categorías</a></li>
+						<li><a class="dropdown-item" th:href="@{/usuarios/listado}">
+							<i class="fas fa-users me-2"></i>Usuarios</a></li>
+					</ul>
+				</li>
+
+				<!-- Boletas para CLIENTE o ADMIN -->
+				<li class="nav-item me-3" th:if="${rol == 'ADMIN' or rol == 'CLIENTE'}">
+					<a class="nav-link" th:href="@{/boletas/filtrado}">
+						<i class="fas fa-file-invoice-dollar me-1"></i> Boletas
+					</a>
+				</li>
+
+				<!-- Ícono de carrito con contador -->
+				<li class="nav-item me-3" th:if="${session.idUsuario != null}">
+					<a class="nav-link position-relative" th:href="@{/carrito/ver}" title="Ver carrito">
+						<i class="fas fa-shopping-cart"></i>
+						<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+							  th:if="${session.carritoSize != null and session.carritoSize > 0}"
+							  th:text="${session.carritoSize}">0</span>
+					</a>
+				</li>
+
+				<!-- Usuario logueado -->
+				<li class="nav-item dropdown" th:if="${nombreCompleto != null}">
+					<a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+					   id="nav-nombre-usuario" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						<img th:src="@{${rol == 'ADMIN' ? '/img/admin/ernesto.png' : '/img/cliente/cristiano.png'}}"
+						     class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;" alt="Perfil" />
+						<span th:text="${nombreCompleto}">Usuario</span>
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-nombre-usuario">
+						<li><a class="dropdown-item" th:href="@{/usuarios/perfil}">
+							<i class="fas fa-user-edit me-2"></i>Actualizar perfil</a></li>
+					</ul>
+				</li>
+				<audio id="audioBienvenida" src="/audio/.mp3" preload="auto"></audio>
+
+				<!-- LIBRERÍA SWEETALERT -->
+				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+
+				<!-- BIENVENIDA CON AUDIO Y SWEETALERT -->
+				<script th:inline="javascript">
+				  /*<![CDATA[*/
+
+				  let usuario = /*[[${nombreCompleto}]]*/ 'Usuario';
+
+				  window.addEventListener('DOMContentLoaded', function () {
+				    const audio = document.getElementById("audioBienvenida");
+
+				    // Solo reproducir una vez por sesión
+				    if (sessionStorage.getItem("bienvenidaReproducida") !== "true") {
+
+				      // Reproduce el audio
+				      audio.play().catch(function (error) {
+				        console.warn("El navegador bloqueó el audio automático.");
+				      });
+
+				      // SweetAlert de bienvenida
+				      Swal.fire({
+				        title: '¡Bienvenido ' + usuario + '!',
+				        text: 'Nos alegra tenerte aquí 😄',
+				        icon: 'success',
+				        confirmButtonText: '¡Gracias!',
+				        timer: 3000,
+				        timerProgressBar: true
+				      });
+
+				      // Marca como reproducido en la sesión
+				      sessionStorage.setItem("bienvenidaReproducida", "true");
+				    }
+				  });
+
+				  /*]]>*/
+				</script>
+
+				<!-- Botón Login si NO hay sesión -->
+				<li class="nav-item" th:if="${session.idUsuario == null}">
+					<a class="nav-link" th:href="@{/login}">
+						<i class="fas fa-sign-in-alt me-1"></i> Login
+					</a>
+				</li>
+
+				<!-- Botón Salir si hay sesión -->
+				<li class="nav-item" th:if="${session.idUsuario != null}">
+					<a class="nav-link" href="/cerrar-sesion">
+						<i class="fas fa-sign-out-alt me-1"></i> Salir
+					</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</nav>

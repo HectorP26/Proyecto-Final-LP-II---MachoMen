@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emisión de Boleta | MachoMen</title>
+
+  <!-- Estilos y fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/estilos.css" />
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
+</head>
+
+<body class><!-- 👈 Se agregó pt-5 aquí -->
+
+  <!-- Navbar -->
+  <div th:replace="~{menu_nav :: menu-nav}"></div>
+
+  <main class="container mt-4">
+    <form th:action="@{/boletas/registrar}" method="post">
+      <div class="row mb-3 mt-5 align-items-center">
+        <div class="col-md-9">
+          <h1 class="m-0">Emisión de boleta</h1>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-primary w-100">
+            Registrar <i class="bi bi-save"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <p class="m-0">
+            <strong>Fecha:</strong>
+            <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></span>
+            <input type="hidden" name="fecha" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" />
+          </p>
+        </div>
+      </div>
+    </form>
+
+    <!-- Selección de Productos -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalProductos">
+          <i class="bi bi-search"></i> Seleccionar Producto
+        </button>
+
+        <form th:action="@{/boletas/agregar}" method="post" th:object="${productoSeleccionado}" class="needs-validation" novalidate>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-2">
+              <label>Código</label>
+              <input type="text" class="form-control" th:field="*{idProd}" readonly
+                th:classappend="${#fields.hasErrors('idProd')} ? 'is-invalid' : ''">
+            </div>
+            <div class="col-md-4">
+              <label>Nombre</label>
+              <input type="text" class="form-control" th:field="*{descripcion}" readonly>
+            </div>
+            <div class="col-md-2">
+              <label>Precio</label>
+              <input type="text" class="form-control" th:field="*{precio}"
+                th:classappend="${#fields.hasErrors('precio')} ? 'is-invalid' : ''">
+            </div>
+            <div class="col-md-2">
+              <label>Cantidad</label>
+              <input type="number" class="form-control" th:field="*{cantidad}"
+                th:classappend="${#fields.hasErrors('cantidad')} ? 'is-invalid' : ''">
+            </div>
+            <div class="col-md-2 d-grid">
+              <button class="btn btn-success">
+                <i class="bi bi-plus"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Detalle de Productos -->
+    <div class="card bg-dark text-white">
+      <div class="card-body">
+        <h5>Detalle de Productos</h5>
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle text-white">
+            <thead class="table-dark">
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="table-dark">
+              <tr th:each="item : ${seleccionados}">
+                <td th:text="${item.idProd}"></td>
+                <td th:text="${item.descripcion}"></td>
+                <td th:text="${item.precio}"></td>
+                <td th:text="${item.cantidad}"></td>
+                <td th:text="${item.subtotal}"></td>
+                <td>
+                  <form th:action="@{/boletas/quitar}" method="post">
+                    <input type="hidden" name="codigo" th:value="${item.idProd}" />
+                    <button class="btn btn-danger btn-sm">
+                      <i class="bi bi-trash"></i> Quitar
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de productos -->
+    <div th:replace="~{fragmentos/modal-productos :: modal-productos}"></div>
+
+    <!-- Alertas -->
+    <th:block th:utext="${alert}"></th:block>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/cbd1db26b3.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/main.js"></script>
+
+  <script>
+  $(document).ready(function () {
+	    // Cuando se haga clic en el botón de selección del producto
+	    $(document).on('click', '.btnSeleccionar', function () {
+	        // Extraer los datos desde el botón de selección
+	        let codigo = $(this).data('codigo');
+	        let nombre = $(this).data('descripcion');
+	        let precio = $(this).data('precio');
+
+	        // Asignar estos datos a los campos del formulario
+	        $('#idProd').val(codigo);
+	        $('#descripcion').val(nombre);
+	        $('#precio').val(precio);
+	        $('#cantidad').val(1); // Establecer cantidad por defecto
+
+	        // Cerrar el modal
+	        $('#modalProductos').modal('hide');
+	    });
+	});
+
+  </script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Listado de Boletas | MachoMen</title>
+
+  <!-- Fuentes y estilos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/estilos.css" />
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
+</head>
+<body class="pt-5"><!-- 👈 Aquí agregamos el padding -->
+
+  <!-- Menú de navegación -->
+  <div th:replace="~{menu_nav :: menu-nav}"></div>
+
+  <!-- Contenido principal -->
+  <div class="container py-5">
+    <div class="row mb-3 align-items-center">
+      <div class="col-md-10">
+        <h1 class="m-0">Listado de boletas con filtros</h1>
+      </div>
+      <div class="col-md-2">
+        <a th:href="@{/boletas/nuevo}" class="btn btn-success w-100">
+          <i class="bi bi-plus-circle-fill me-1"> Nueva</i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <form method="get" th:action="@{/boletas/filtrado}" th:object="${filtro}">
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" th:field="*{idCategoria}" onchange="this.form.submit()">
+            <option value="">-- Todas --</option>
+            <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.descripcion}"></option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Buscar por producto</label>
+          <input type="text" class="form-control" th:field="*{busqueda}" placeholder="Ej: Casaca de cuero" />
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search"></i> Filtrar
+          </button>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <a th:href="@{/boletas/filtrado}" class="btn btn-outline-secondary w-100">
+            <i class="bi bi-arrow-clockwise"></i> Limpiar
+          </a>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tabla de boletas -->
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <table id="tblBoletas" class="table table-hover table-striped table-borderless align-middle">
+          <thead class="table-dark text-center">
+            <tr>
+              <th>Número</th>
+              <th>Fecha</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Total</th>
+              <th>Acciones</th> <!-- Nueva columna para las acciones -->
+            </tr>
+          </thead>
+          <tbody class="table-secondary">
+            <tr th:each="item : ${lstBoletas}">
+              <td th:text="${item.numBoleta}" class="text-center"></td>
+              <td th:text="${item.fecha}" class="text-center"></td>
+              <td th:text="${item.usuario.fullUsuario}"></td>
+              <td th:text="${item.usuario.tipo.descripcion}"></td>
+              <td th:text="|S/. ${#numbers.formatDecimal(item.total,1,2,'POINT')}|" class="text-end"></td>
+
+              <!-- Columna con el botón para ver PDF -->
+              <td class="text-center">
+                <form th:action="@{/reportes/reporte}" method="get" target="_blank">
+                  <input type="hidden" name="numBol" th:value="${item.numBoleta}" />
+                  <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Ver PDF
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Alerta tipo toast -->
+    <th:block th:utext="${toast}"></th:block>
+  </div>
+
+  <!-- Footer -->
+  <footer id="contenedor-footer" class="bg-dark text-white mt-5 py-4">
+    <div class="container d-flex justify-content-between flex-wrap">
+      <div>
+        <h5>NOSOTROS</h5>
+        <p>Somos una tienda especializada en ropa de cuero para hombres.</p>
+        <span class="letra-logo">Macho<span class="text-danger">Men</span></span>
+      </div>
+      <div>
+        <h5>ENLACES</h5>
+        <p><a th:href="@{/contacto}" class="text-white">Contáctanos</a></p>
+      </div>
+      <div>
+        <h5>REDES</h5>
+        <br />
+        <i class="bi bi-instagram me-2"></i>
+        <i class="bi bi-tiktok me-2"></i>
+        <i class="bi bi-facebook"></i>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/cbd1db26b3.js" crossorigin="anonymous"></script>
+  <script src="/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      new DataTable('#tblBoletas', {
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/2.0.3/i18n/es-ES.json',
+          search: 'Filtro general :'
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

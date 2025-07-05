@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Machomen - Listado de Productos</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Fuentes y estilos -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+	rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="/css/listados.css" />
+<link rel="stylesheet" href="/css/estilos.css" />
+</head>
+<body>
+	<div th:replace="~{menu_nav :: menu-nav}"></div>
+	<div class="container mt-5">
+		<h2 class="titulo text-center mb-4">📦 Listado de Productos</h2>
+		<div class="text-center mb-4">
+			<a th:href="@{/productos/nuevo}" class="btn btn-nuevo"> <i
+				class="fa-solid fa-plus me-2"></i> Registrar Nuevo Producto
+			</a>
+		</div>
+		<div class="mb-4">
+			<h4 class="mb-3">Filtrar Productos</h4>
+			<form th:action="@{/productos/listado}" method="get"
+				class="d-flex align-items-center gap-2 flex-wrap">
+				<select name="categoria" class="form-select"
+					style="max-width: 200px;">
+					<option th:value="0" th:selected="${categoriaSeleccionada == 0}">Todos</option>
+					<option th:each="cat : ${listaCat}" th:value="${cat.idCategoria}"
+						th:text="${cat.descripcion}"
+						th:selected="${categoriaSeleccionada == cat.idCategoria}"></option>
+				</select> <input type="text" name="busqueda" class="form-control"
+					placeholder="Buscar productos" style="max-width: 250px;"
+					th:value="${busqueda}" />
+				<button type="submit" class="btn btn-primary">Filtrar</button>
+			</form>
+			<div th:if="${error != null}" class="alert alert-danger mt-3"
+				th:text="${error}"></div>
+		</div>
+
+		<!-- Tabla de productos -->
+		<div class="table-responsive">
+			<table
+				class="table table-hover table-striped table-bordered align-middle text-center tabla-productos">
+				<thead class="table-dark">
+					<tr>
+						<th>Imagen</th>
+						<th>ID</th>
+						<th>Descripción</th>
+						<th>Stock</th>
+						<th>Precio</th>
+						<th>Categoría</th>
+						<th>Acciones</th>
+						<th>Estado</th>
+					</tr>
+				</thead>
+				<tbody class="table-light">
+					<tr th:each="item : ${lista}">
+						<td><img th:src="@{'/img/productos/' + ${item.imagen}}"
+							onerror="this.src='/img/productos/no-imagen.png'"
+							class="img-producto" /></td>
+						<td th:text="${item.idProd}"></td>
+						<td th:text="${item.desProd}"></td>
+						<td th:text="${item.stkProd}"></td>
+						<td
+							th:text="'S/. ' + ${#numbers.formatDecimal(item.preProd, 1, 2, 'POINT')}"></td>
+						<td th:text="${item.categoria.descripcion}"></td>
+						<td>
+							<!-- Botón de Editar --> <a
+							th:href="@{/productos/editar/{id}(id=${item.idProd})}"
+							class="btn btn-outline-primary btn-sm" title="Editar"> <i
+								class="fa-regular fa-pen-to-square"></i> Editar
+						</a> <!-- Botón de Eliminar --> <a
+							th:href="@{/productos/eliminar/{id}(id=${item.idProd})}"
+							class="btn btn-outline-danger btn-sm"
+							th:onclick="'return confirm(\'¿Estás seguro de eliminar el producto?\')'">
+								<i class="fa-solid fa-trash"></i> Eliminar
+						</a>
+						</td>
+						<td>
+							<!-- Botón para cambiar el estado (Activo/Inactivo) -->
+							<form method="post"
+								th:action="@{/productos/cambiar-estado/{id}(id=${item.idProd})}">
+								<div class="form-switch d-flex justify-content-center mt-2">
+									<input type="checkbox" class="form-check-input" name="estado"
+										th:checked="${item.estado.idestado == 1}"
+										onchange="this.form.submit()" /> <label
+										class="form-check-label"
+										th:text="${item.estado.idestado == 1 ? 'Activo' : 'Inactivo'}"></label>
+								</div>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div th:if="${alert}" class="mt-4">
+			<div th:utext="${alert}"></div>
+		</div>
+	</div>
+	<footer id="contenedor-footer" class="bg-dark text-white mt-5 py-4">
+		<div class="container d-flex justify-content-between flex-wrap">
+			<div>
+				<h5>NOSOTROS</h5>
+				<p>Somos una tienda especializada en ropa de cuero para hombres,
+					diseñada con calidad y estilo.</p>
+				<span class="letra-logo">Macho<span class="text-danger">Men</span></span>
+			</div>
+			<div>
+				<h5>ENLACES</h5>
+				<p>
+					<a th:href="@{/contacto}" class="text-white">Contáctanos</a>
+				</p>
+			</div>
+			<div>
+				<h5>REDES</h5>
+				<br> <i class="bi bi-instagram me-2"></i> <i
+					class="bi bi-tiktok me-2"></i> <i class="bi bi-facebook"></i>
+			</div>
+		</div>
+	</footer>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://kit.fontawesome.com/cbd1db26b3.js"
+		crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/main.js"></script>
+</body>
+</html>

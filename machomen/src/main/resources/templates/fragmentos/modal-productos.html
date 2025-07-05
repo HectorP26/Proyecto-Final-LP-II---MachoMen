@@ -1,0 +1,52 @@
+<div th:fragment="modal-productos">
+  <div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <!-- Header -->
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title" id="modalProductosLabel">
+            <i class="bi bi-box-seam me-2"></i> Seleccionar Producto
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle table-bordered">
+              <thead class="table-dark text-center">
+                <tr>
+                  <th>Código</th>
+                  <th>Descripción</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody class="table-light text-center">
+                <tr th:each="prod : ${productos}">
+                  <td th:text="${prod.idProd}"></td>
+                  <td th:text="${prod.desProd}"></td>
+                  <td>
+                    <span class="text-danger fw-bold"
+                          th:text="|S/. ${#numbers.formatDecimal(prod.preProd, 1, 2, 'POINT')}|"></span>
+                  </td>
+                  <td th:text="${prod.stkProd}"></td>
+                  <td>
+                    <button type="button" class="btn btn-outline-success btn-sm btnSeleccionar"
+                            th:data-codigo="${prod.idProd}"
+                            th:data-descripcion="${prod.desProd}"
+                            th:data-precio="${prod.preProd}">
+                      <i class="bi bi-cart-plus-fill me-1"></i> Seleccionar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
